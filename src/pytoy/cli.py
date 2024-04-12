@@ -1,4 +1,6 @@
+import cli_file
 import fire
+import json
 import os
 
 
@@ -8,6 +10,16 @@ class CLI(object):
     def hello(self, name: str = "World"):
         """Say hello."""
         print(f"Hello, {name}!")
+
+    def cmd(self, cmd: str = ""):
+        """Run a command."""
+        return os.system(cmd)
+
+    def ls(
+        self, dir: str = ".", max_depth: int | None = 1, indent: int | str | None = None
+    ):
+        """List directory."""
+        return json.dumps(cli_file.list_file_structure(dir, max_depth), indent=indent)
 
     def replace_file(self, file: str, old: str, new: str, extension: str = None):
         if extension and not file.endswith(extension):
