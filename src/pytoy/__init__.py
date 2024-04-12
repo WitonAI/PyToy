@@ -1,6 +1,3 @@
-import fire
+from pytoy.cli import PyToy
 
-from pytoy.cli import CLI
-
-def cli():
-    fire.Fire(CLI)
+__all__ = ["PyToy"]
