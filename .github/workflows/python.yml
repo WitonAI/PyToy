@@ -59,28 +59,70 @@ jobs:
         run: python3 --version
 
       - name: Install dependencies
-        run: python3 -m pip install --upgrade build
+        run: python3 -m pip install --upgrade -r requirements.txt
 
       - name: Build
         run: python3 -m build
 
-      - name: Upload artifacts
+      - name: Build docs
+        run: mkdocs build -s
+
+      - name: Upload package artifacts
         uses: actions/upload-artifact@v4
         with:
           name: package
           path: dist
 
-  pypi-publish:
-      name: Upload release to PyPI
-      runs-on: ubuntu-latest
-      needs: [package]
-      permissions:
-        id-token: write
-      steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - name: Upload docs artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: package
-          path: dist
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+          name: docs
+          path: site
+
+  pypi-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    needs: [package]
+    permissions:
+      id-token: write
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: package
+        path: dist
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+  
+  pages-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    needs: [package]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    steps:
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: docs
+        path: site
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: 'site'
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

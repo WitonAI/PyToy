@@ -1,11 +1,10 @@
-import re
+from nginx import Nginx
 import cli_file
+import common
 import fire
 import json
 import os
-import nginx
-import common
-
+import re
 
 class CLI(object):
     """PyToy CLI."""
@@ -21,7 +20,7 @@ class CLI(object):
         )
         return re.findall(r"pytoy-(.*).dist-info", path)[0] if path else "0.0.0"
 
-    class nginx(nginx.CLI):
+    class nginx(Nginx):
         pass
 
     def ls(

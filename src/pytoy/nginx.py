@@ -1,7 +1,7 @@
 from common import *
 
 
-class CLI:
+class Nginx:
     def installed(self) -> bool:
         """Check if Nginx is installed"""
         return bool(run_command_str("which nginx"))
