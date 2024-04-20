@@ -1,19 +1,28 @@
+import re
 import cli_file
 import fire
 import json
 import os
+import nginx
+import common
 
 
 class CLI(object):
     """PyToy CLI."""
 
-    def hello(self, name: str = "World"):
-        """Say hello."""
-        print(f"Hello, {name}!")
+    def path(self) -> str:
+        """Get PyToy path."""
+        return os.path.dirname(os.path.abspath(__file__))
 
-    def cmd(self, cmd: str = ""):
-        """Run a command."""
-        return os.system(cmd)
+    def version(self) -> str:
+        """Get PyToy version."""
+        path = common.find_file_by_pattern(
+            os.path.dirname(self.path()) + "/pytoy-*.dist-info"
+        )
+        return re.findall(r"pytoy-(.*).dist-info", path)[0] if path else "0.0.0"
+
+    class nginx(nginx.CLI):
+        pass
 
     def ls(
         self, dir: str = ".", max_depth: int | None = 1, indent: int | str | None = None
