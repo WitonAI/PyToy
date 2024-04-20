@@ -26,7 +26,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version-file: 'pyproject.toml'
+          python-version-file: "pyproject.toml"
 
       - name: Display python version
         run: python3 --version
@@ -53,7 +53,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version-file: 'pyproject.toml'
+          python-version-file: "pyproject.toml"
 
       - name: Display python version
         run: python3 --version
@@ -86,43 +86,38 @@ jobs:
     permissions:
       id-token: write
     steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: package
-        path: dist
-    - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-  
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+          path: dist
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
   pages-publish:
-    name: Upload release to PyPI
+    name: Upload docs to GitHub Pages
     runs-on: ubuntu-latest
     needs: [package]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
-      contents: read
       pages: write
       id-token: write
-    concurrency:
-      group: "pages"
-      cancel-in-progress: false
     steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docs
+          path: site
 
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: docs
-        path: site
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v5
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: 'site'
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "site"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
